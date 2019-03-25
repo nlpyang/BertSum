@@ -1,7 +1,7 @@
 # BertSum
 
 
-Results (25/3/2019):
+Results on CNN/Dailymail (25/3/2019):
 
 |  Models| ROUGE-1 | ROUGE-2 |ROUGE-3
 | :---         |     :---      |         :--- |          :--- |
