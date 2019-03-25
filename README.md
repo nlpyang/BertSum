@@ -16,8 +16,10 @@ Results on CNN/Dailymail (25/3/2019):
 
 ## Data Preparation For CNN/Dailymail
 ### Option 1: download the processed data
+
 download https://drive.google.com/open?id=1lqQmKflLisi-JBzFY0DL4sxqKtzZMrxt
-unzip the zipfile and put all pt files into bert_data
+
+unzip the zipfile and put all `.pt` files into `bert_data`
 
 ### Option 2: process the data yourself
 
