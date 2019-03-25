@@ -3,7 +3,7 @@
 
 Results (25/3/2019):
 
-|  1| ROUGE-1 | ROUGE-2 |ROUGE-3
+|  Models| ROUGE-1 | ROUGE-2 |ROUGE-3
 | :---         |     :---      |         :--- |          :--- |
 | Transformer Baseline   | 40.9     | 18.02    |37.17    |
 | BERTSUM+Classifier     | 43.23       | 20.22    |39.60      |
