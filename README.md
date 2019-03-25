@@ -14,7 +14,7 @@ Results on CNN/Dailymail (25/3/2019):
 
 **Python version**: This code is in Python3.6
 
-Package Requirements: pytorch pytorch_pretrained_bert tensorboardX multiprocess pyrouge
+**Package Requirements**: pytorch pytorch_pretrained_bert tensorboardX multiprocess pyrouge
 
 Some codes are borrowed from ONMT(https://github.com/OpenNMT/OpenNMT-py)
 
