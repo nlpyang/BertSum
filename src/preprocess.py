@@ -34,9 +34,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-mode", default='', type=str, help='format_to_lines or format_to_bert')
     parser.add_argument("-oracle_mode", default='greedy', type=str, help='how to generate oracle summaries, greedy or combination, combination will generate more accurate oracles but take much longer time.')
-    parser.add_argument("-data_path", default='../../data/')
-    parser.add_argument("-raw_path", default='../../raw_data/')
-    parser.add_argument("-save_path", default='../../data/')
+    parser.add_argument("-map_path", default='../data/')
+    parser.add_argument("-raw_path", default='../json_data/')
+    parser.add_argument("-save_path", default='../bert_data/')
 
     parser.add_argument("-shard_size", default=2000, type=int)
     parser.add_argument('-min_nsents', default=3, type=int)

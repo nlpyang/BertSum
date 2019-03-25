@@ -20,7 +20,7 @@ from models.model_builder import Summarizer
 from models.trainer import build_trainer
 from others.logging import logger, init_logger
 
-model_flags = ['hidden_size', 'ff_size', 'heads', 'emb_size', 'local_layers', 'inter_layers','encoder','ff_actv', 'use_interval']
+model_flags = ['hidden_size', 'ff_size', 'heads', 'inter_layers','encoder','ff_actv', 'use_interval','rnn_size']
 
 
 def str2bool(v):
@@ -129,7 +129,7 @@ def wait_and_validate(args, device_id):
             max_step = xent_lst.index(min(xent_lst))
             if (i - max_step > 10):
                 break
-        xent_lst = sorted(xent_lst, key=lambda x: x[0])[:5]
+        xent_lst = sorted(xent_lst, key=lambda x: x[0])[:3]
         logger.info('PPL %s' % str(xent_lst))
         for xent, cp in xent_lst:
             step = int(cp.split('.')[-2].split('_')[-1])
@@ -275,10 +275,10 @@ if __name__ == '__main__':
 
     parser.add_argument("-encoder", default='classifier', type=str, choices=['classifier','transformer','rnn','baseline'])
     parser.add_argument("-mode", default='train', type=str, choices=['train','validate','test'])
-    parser.add_argument("-bert_data_path", default='../../data/bert_data/cnndm')
-    parser.add_argument("-model_path", default='../../models/')
-    parser.add_argument("-result_path", default='../../results/cnndm')
-    parser.add_argument("-temp_dir", default='../../temp')
+    parser.add_argument("-bert_data_path", default='../data/bert_data/cnndm')
+    parser.add_argument("-model_path", default='../models/')
+    parser.add_argument("-result_path", default='../results/cnndm')
+    parser.add_argument("-temp_dir", default='../temp')
 
     parser.add_argument("-batch_size", default=1000, type=int)
 
@@ -311,7 +311,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-visible_gpus', default='-1', type=str)
     parser.add_argument('-gpu_ranks', default='0', type=str)
-    parser.add_argument('-log_file', default='../../logs/cnndm.log')
+    parser.add_argument('-log_file', default='../logs/cnndm.log')
     parser.add_argument('-dataset', default='')
     parser.add_argument('-seed', default=666, type=int)
 
