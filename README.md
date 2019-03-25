@@ -77,6 +77,7 @@ python train.py -mode validate -bert_data_path ../data/bert_data/cnndm -model_pa
 
 ## Trained Model
 download the trained model at https://drive.google.com/open?id=1YFWPOPAyf_Uhqj6ny7_-2iZiDy5BXNvL
+
 Test it by running:
 ```
 python train.py -mode test -bert_data_path ../data/bert_data/cnndm -test_from CP_FILE  -visible_gpus 0  -gpu_ranks 0 -batch_size 30000  -log_file LOG_FILE  -result_path RESULT_PATH -block_trigram true
