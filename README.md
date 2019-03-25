@@ -5,7 +5,7 @@ This code is for the paper 'Fine-tune BERT for Extractive Summarization'.
 
 **Python version**: This code is in Python3.6
 
-## Data Preparation
+## Data Preparation For CNN/Dailymail
 ### Option 1: download the processed data
 
 ### Option 2: process the data yourself
