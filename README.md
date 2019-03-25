@@ -28,4 +28,5 @@ python preprocess.py -mode format_to_bert -raw_path JSON_PATH -save_path BERT_DA
 ```
 
 `JSON_PATH` is the directory containing json files (../json_data), `BERT_DATA_PATH` is the target directory to save the generated binary files (../bert_data)
--oracle_mode can be greedy or combination, where combination is more accurate but takes much longer time to process 
+
+`-oracle_mod`e can be `greedy` or `combination`, where `combination` is more accurate but takes much longer time to process 
