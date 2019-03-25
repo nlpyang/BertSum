@@ -19,7 +19,7 @@ Follow steps in https://github.com/abisee/cnn-dailymail to generate CoreNLP toke
 python preprocess.py -mode format_to_lines -raw_path RAW_PATH -save_path JSON_PATH -map_path MAP_PATH -lower 
 ```
 
-RAW_PATH is the directory containing tokenized files (../merged_stories_tokenized), JSON_PATH is the target directory to save the generated json files (../json_data), MAP_PATH is the  directory containing the urls files (../urls)
+`RAW_PATH` is the directory containing tokenized files (../merged_stories_tokenized), `JSON_PATH` is the target directory to save the generated json files (../json_data), `MAP_PATH` is the  directory containing the urls files (../urls)
 
 #### Step 2
 
@@ -27,5 +27,5 @@ RAW_PATH is the directory containing tokenized files (../merged_stories_tokenize
 python preprocess.py -mode format_to_bert -raw_path JSON_PATH -save_path BERT_DATA_PATH -oracle_mode greedy -n_cpus 4 -log_file ../logs/preprocess.log
 ```
 
-JSON_PATH is the directory containing json files (../json_data), BERT_DATA_PATH is the target directory to save the generated binary files (../bert_data)
+`JSON_PATH` is the directory containing json files (../json_data), `BERT_DATA_PATH` is the target directory to save the generated binary files (../bert_data)
 -oracle_mode can be greedy or combination, where combination is more accurate but takes much longer time to process 
