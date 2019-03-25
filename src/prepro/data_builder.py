@@ -230,9 +230,9 @@ def _format_to_bert(params):
     datasets = []
     for d in jobs:
         source, tgt = d['src'], d['tgt']
-        if (args.select_mode == 'greedy'):
+        if (args.oracle_mode == 'greedy'):
             oracle_ids = greedy_selection(source, tgt, 3)
-        elif (args.select_mode == 'combination'):
+        elif (args.oracle_mode == 'combination'):
             oracle_ids = combination_selection(source, tgt, 3)
         b_data = bert.preprocess(source, tgt, oracle_ids)
         if (b_data is None):
