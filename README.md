@@ -1,7 +1,13 @@
 # BertSum
 
 
-This code is for the paper 'Fine-tune BERT for Extractive Summarization'.
+Results (25/3/2019):
+|  | ROUGE-1 | ROUGE-2 |ROUGE-3
+| :---         |     :---      |         :--- |          :--- |
+| Transformer Baseline   | 40.9     | 18.02    |37.17    |
+| BERTSUM+Classifier     | 43.23       | 20.22    |39.60      |
+| BERTSUM+Transformer     | 43.25      | 20.24    |39.63     |
+| BERTSUM+LSTM     | 43.22       |  20.17    |39.59      |
 
 **Python version**: This code is in Python3.6
 
