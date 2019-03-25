@@ -36,8 +36,7 @@ def build_optim(model, opt, checkpoint):
             beta2=opt.adam_beta2,
             adagrad_accum=opt.adagrad_accumulator_init,
             decay_method=opt.decay_method,
-            warmup_steps=opt.warmup_steps,
-            model_size=opt.rnn_size)
+            warmup_steps=opt.warmup_steps)
 
     # Stage 1:
     # Essentially optim.set_parameters (re-)creates and optimizer using
@@ -126,7 +125,6 @@ class Optimizer(object):
       adagrad_accum (float, optional): initialization parameter for adagrad
       decay_method (str, option): custom decay options
       warmup_steps (int, option): parameter for `noam` decay
-      model_size (int, option): parameter for `noam` decay
 
     We use the default parameters for Adam that are suggested by
     the original paper https://arxiv.org/pdf/1412.6980.pdf
@@ -145,8 +143,8 @@ class Optimizer(object):
                  beta1=0.9, beta2=0.999,
                  adagrad_accum=0.0,
                  decay_method=None,
-                 warmup_steps=4000,
-                 model_size=None):
+                 warmup_steps=4000
+                 ):
         self.last_ppl = None
         self.learning_rate = learning_rate
         self.original_lr = learning_rate
@@ -161,7 +159,6 @@ class Optimizer(object):
         self.adagrad_accum = adagrad_accum
         self.decay_method = decay_method
         self.warmup_steps = warmup_steps
-        self.model_size = model_size
 
     def set_parameters(self, params):
         """ ? """
@@ -215,9 +212,9 @@ class Optimizer(object):
         if self.decay_method == "noam":
             self._set_rate(
                 self.original_lr *
-                (self.model_size ** (-0.5) *
+
                  min(self._step ** (-0.5),
-                     self._step * self.warmup_steps**(-1.5))))
+                     self._step * self.warmup_steps**(-1.5)))
 
             # self._set_rate(self.original_lr *self.model_size ** (-0.5) *min(1.0, self._step / self.warmup_steps)*max(self._step, self.warmup_steps)**(-0.5))
         # Decay based on start_decay_steps every decay_steps
