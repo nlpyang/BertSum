@@ -1,6 +1,6 @@
 # BertSum
 
-## This code is for paper `Fine-tune BERT for Extractive Summarization`
+**This code is for paper `Fine-tune BERT for Extractive Summarization`**
 
 
 Results on CNN/Dailymail (25/3/2019):
