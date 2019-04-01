@@ -79,13 +79,4 @@ python train.py -mode validate -bert_data_path ../bert_data/cnndm -model_path MO
 * `MODEL_PATH` is the directory of saved checkpoints
 * `RESULT_PATH` is where you want to put decoded summaries (default `../results/cnndm`)
 
-## Trained Model
-download the trained model at https://drive.google.com/open?id=1YFWPOPAyf_Uhqj6ny7_-2iZiDy5BXNvL
-
-Test it by running:
-```
-python train.py -mode test -bert_data_path ../bert_data/cnndm -test_from CP_FILE  -visible_gpus 0  -gpu_ranks 0 -batch_size 30000  -log_file LOG_FILE  -result_path RESULT_PATH -block_trigram true
-```
-* `CP_FILE` is the path of checkpoint file
-
 
