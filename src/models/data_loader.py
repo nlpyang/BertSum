@@ -3,18 +3,9 @@ import glob
 import random
 
 import torch
-from pytorch_pretrained_bert import BertTokenizer
 
 from others.logging import logger
 
-
-class BertData():
-    def __init__(self, args):
-        self.args = args
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True, cache_dir=args.temp_dir)
-        self.sep_vid = self.tokenizer.vocab['[SEP]']
-        self.cls_vid = self.tokenizer.vocab['[CLS]']
-        self.pad_vid = self.tokenizer.vocab['[PAD]']
 
 
 class Batch(object):
@@ -131,6 +122,7 @@ class Dataloader(object):
         self.shuffle = shuffle
         self.is_test = is_test
         self.cur_iter = self._next_dataset_iterator(datasets)
+
         assert self.cur_iter is not None
 
     def __iter__(self):
@@ -160,7 +152,7 @@ class Dataloader(object):
 
 
 class DataIterator(object):
-    def __init__(self, args, dataset,  batch_size, device=None, is_test=False,
+    def __init__(self, args, dataset,  batch_size,  device=None, is_test=False,
                  shuffle=True):
         self.args = args
         self.batch_size, self.is_test, self.dataset = batch_size, is_test, dataset
@@ -172,7 +164,6 @@ class DataIterator(object):
 
         self._iterations_this_epoch = 0
 
-        self.bert_data = BertData(args)
     def data(self):
         if self.shuffle:
             random.shuffle(self.dataset)
