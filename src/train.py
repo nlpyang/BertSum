@@ -12,6 +12,7 @@ import signal
 import time
 
 import torch
+from pytorch_pretrained_bert import BertConfig
 
 import distributed
 from models import data_loader, model_builder
@@ -117,7 +118,8 @@ class ErrorHandler(object):
 
 
 def wait_and_validate(args, device_id):
-    model = Summarizer(args, device, load_pretrained_bert=False)
+    config = BertConfig.from_json_file(args.bert_config_path)
+    model = Summarizer(args, device, load_pretrained_bert=False, bert_config = config)
 
     timestep = 0
     if (args.test_all):
@@ -149,7 +151,7 @@ def wait_and_validate(args, device_id):
                 if (time_of_cp > timestep):
                     timestep = time_of_cp
                     step = int(cp.split('.')[-2].split('_')[-1])
-                    validate(args, device_id, cp, step)
+                    validate(args, model, device_id, cp, step)
                     test(args, model, device_id, cp, step)
 
             cp_files = sorted(glob.glob(os.path.join(args.model_path, 'model_step_*.pt')))
@@ -256,7 +258,6 @@ def train(args, device_id):
                 setattr(args, k, opt[k])
         model.load_cp(checkpoint)
         optim = model_builder.build_optim(args, model, checkpoint)
-
     else:
         optim = model_builder.build_optim(args, model, None)
 
@@ -339,5 +340,7 @@ if __name__ == '__main__':
         baseline(args, cal_oracle=True)
     elif (args.mode == 'test'):
         cp = args.test_from
+        config = BertConfig.from_json_file(args.bert_config_path)
+        model = Summarizer(args, device, load_pretrained_bert=False, bert_config=config)
         step = int(cp.split('.')[-2].split('_')[-1])
-        test(args, device_id, cp, step)
+        test(args, model, device_id, cp, step)
