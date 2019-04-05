@@ -41,12 +41,13 @@ def build_optim(args, model, checkpoint):
 
 
 class Bert(nn.Module):
-    def __init__(self, large, temp_dir):
+    def __init__(self, config_path, temp_dir, load_pretrained_bert):
         super(Bert, self).__init__()
-        if(large):
-            self.model = BertModel.from_pretrained('bert-large-uncased', cache_dir=temp_dir)
-        else:
+        if(load_pretrained_bert):
             self.model = BertModel.from_pretrained('bert-base-uncased', cache_dir=temp_dir)
+        else:
+            config = BertConfig.from_json_file(config_path)
+            self.model = BertModel(config)
 
     def forward(self, x, segs, mask):
         encoded_layers, _ = self.model(x, segs, attention_mask =mask)
@@ -56,11 +57,11 @@ class Bert(nn.Module):
 
 
 class Summarizer(nn.Module):
-    def __init__(self, args,   device, checkpoint=None):
+    def __init__(self, args, device, load_pretrained_bert = False):
         super(Summarizer, self).__init__()
         self.args = args
         self.device = device
-        self.bert = Bert(args.large, args.temp_dir)
+        self.bert = Bert(args.bert_config_path, args.temp_dir, load_pretrained_bert)
         if (args.encoder == 'classifier'):
             self.encoder = Classifier(self.bert.model.config.hidden_size)
         elif(args.encoder=='transformer'):
@@ -76,18 +77,17 @@ class Summarizer(nn.Module):
             self.bert.model = BertModel(bert_config)
             self.encoder = Classifier(self.bert.model.config.hidden_size)
 
-        if checkpoint is not None:
-            self.load_state_dict(checkpoint['model'], strict=True)
-        else:
-            if args.param_init != 0.0:
-                for p in self.encoder.parameters():
-                    p.data.uniform_(-args.param_init, args.param_init)
-            if args.param_init_glorot:
-                for p in self.encoder.parameters():
-                    if p.dim() > 1:
-                        xavier_uniform_(p)
+        if args.param_init != 0.0:
+            for p in self.encoder.parameters():
+                p.data.uniform_(-args.param_init, args.param_init)
+        if args.param_init_glorot:
+            for p in self.encoder.parameters():
+                if p.dim() > 1:
+                    xavier_uniform_(p)
 
         self.to(device)
+    def load_cp(self, pt):
+        self.load_state_dict(pt['model'], strict=True)
 
     def forward(self, x, segs, clss, mask, mask_cls, sentence_range=None):
 
