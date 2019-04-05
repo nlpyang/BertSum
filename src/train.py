@@ -236,16 +236,6 @@ def train(args, device_id):
         torch.cuda.set_device(device_id)
         torch.cuda.manual_seed(args.seed)
 
-    if args.train_from != '':
-        logger.info('Loading checkpoint from %s' % args.train_from)
-        checkpoint = torch.load(args.train_from,
-                                map_location=lambda storage, loc: storage)
-        opt = vars(checkpoint['opt'])
-        for k in opt.keys():
-            if (k in model_flags):
-                setattr(args, k, opt[k])
-    else:
-        checkpoint = None
 
     torch.manual_seed(args.seed)
     random.seed(args.seed)
@@ -256,7 +246,20 @@ def train(args, device_id):
                                                  shuffle=True, is_test=False)
 
     model = Summarizer(args, device, load_pretrained_bert=True)
-    optim = model_builder.build_optim(args, model, checkpoint)
+    if args.train_from != '':
+        logger.info('Loading checkpoint from %s' % args.train_from)
+        checkpoint = torch.load(args.train_from,
+                                map_location=lambda storage, loc: storage)
+        opt = vars(checkpoint['opt'])
+        for k in opt.keys():
+            if (k in model_flags):
+                setattr(args, k, opt[k])
+        model.load_cp(checkpoint)
+        optim = model_builder.build_optim(args, model, checkpoint)
+
+    else:
+        optim = model_builder.build_optim(args, model, None)
+
     logger.info(model)
     trainer = build_trainer(args, device_id, model, optim)
     trainer.train(train_iter_fct, args.train_steps)
