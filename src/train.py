@@ -341,7 +341,5 @@ if __name__ == '__main__':
         baseline(args, cal_oracle=True)
     elif (args.mode == 'test'):
         cp = args.test_from
-        config = BertConfig.from_json_file(args.bert_config_path)
-        model = Summarizer(args, device, load_pretrained_bert=False, bert_config=config)
         step = int(cp.split('.')[-2].split('_')[-1])
-        test(args, model, device_id, cp, step)
+        test(args, device_id, cp, step)
