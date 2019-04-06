@@ -118,8 +118,6 @@ class ErrorHandler(object):
 
 
 def wait_and_validate(args, device_id):
-    config = BertConfig.from_json_file(args.bert_config_path)
-    model = Summarizer(args, device, load_pretrained_bert=False, bert_config = config)
 
     timestep = 0
     if (args.test_all):
@@ -128,7 +126,7 @@ def wait_and_validate(args, device_id):
         xent_lst = []
         for i, cp in enumerate(cp_files):
             step = int(cp.split('.')[-2].split('_')[-1])
-            xent = validate(args, model, device_id, cp, step)
+            xent = validate(args,  device_id, cp, step)
             xent_lst.append((xent, cp))
             max_step = xent_lst.index(min(xent_lst))
             if (i - max_step > 10):
@@ -137,7 +135,7 @@ def wait_and_validate(args, device_id):
         logger.info('PPL %s' % str(xent_lst))
         for xent, cp in xent_lst:
             step = int(cp.split('.')[-2].split('_')[-1])
-            test(args, model, device_id, cp, step)
+            test(args,  device_id, cp, step)
     else:
         while (True):
             cp_files = sorted(glob.glob(os.path.join(args.model_path, 'model_step_*.pt')))
@@ -151,8 +149,8 @@ def wait_and_validate(args, device_id):
                 if (time_of_cp > timestep):
                     timestep = time_of_cp
                     step = int(cp.split('.')[-2].split('_')[-1])
-                    validate(args, model, device_id, cp, step)
-                    test(args, model, device_id, cp, step)
+                    validate(args,  device_id, cp, step)
+                    test(args,  device_id, cp, step)
 
             cp_files = sorted(glob.glob(os.path.join(args.model_path, 'model_step_*.pt')))
             cp_files.sort(key=os.path.getmtime)
@@ -165,7 +163,7 @@ def wait_and_validate(args, device_id):
                 time.sleep(300)
 
 
-def validate(args, model, device_id, pt, step):
+def validate(args,  device_id, pt, step):
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
     if (pt != ''):
         test_from = pt
@@ -174,7 +172,8 @@ def validate(args, model, device_id, pt, step):
     logger.info('Loading checkpoint from %s' % test_from)
     checkpoint = torch.load(test_from, map_location=lambda storage, loc: storage)
 
-    # model = Summarizer(args, device, checkpoint)
+    config = BertConfig.from_json_file(args.bert_config_path)
+    model = Summarizer(args, device, load_pretrained_bert=False, bert_config = config)
     model.load_cp(checkpoint)
     model.eval()
 
@@ -185,7 +184,8 @@ def validate(args, model, device_id, pt, step):
     stats = trainer.validate(valid_iter, step)
     return stats.xent()
 
-def test(args, model, device_id, pt, step):
+def test(args, device_id, pt, step):
+
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
     if (pt != ''):
         test_from = pt
@@ -199,7 +199,8 @@ def test(args, model, device_id, pt, step):
             setattr(args, k, opt[k])
     print(args)
 
-    # model = Summarizer(args, device, checkpoint)
+    config = BertConfig.from_json_file(args.bert_config_path)
+    model = Summarizer(args, device, load_pretrained_bert=False, bert_config = config)
     model.load_cp(checkpoint)
     model.eval()
 
