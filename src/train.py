@@ -171,6 +171,11 @@ def validate(args,  device_id, pt, step):
         test_from = args.test_from
     logger.info('Loading checkpoint from %s' % test_from)
     checkpoint = torch.load(test_from, map_location=lambda storage, loc: storage)
+    opt = vars(checkpoint['opt'])
+    for k in opt.keys():
+        if (k in model_flags):
+            setattr(args, k, opt[k])
+    print(args)
 
     config = BertConfig.from_json_file(args.bert_config_path)
     model = Summarizer(args, device, load_pretrained_bert=False, bert_config = config)
