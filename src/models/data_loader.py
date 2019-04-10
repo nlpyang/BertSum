@@ -173,7 +173,11 @@ class DataIterator(object):
 
     def preprocess(self, ex, is_test):
         src = ex['src']
-        labels = ex['labels']
+        if('labels' in ex):
+            labels = ex['labels']
+        else:
+            labels = ex['src_sent_labels']
+
         segs = ex['segs']
         if(not self.args.use_interval):
             segs=[0]*len(segs)
