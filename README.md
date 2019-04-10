@@ -27,26 +27,41 @@ unzip the zipfile and put all `.pt` files into `bert_data`
 
 ### Option 2: process the data yourself
 
+#### Step 1 Download Stories
+Download and unzip the `stories` directories from [here](http://cs.nyu.edu/~kcho/DMQA/) for both CNN and Daily Mail. Put all  `.stroy` files in one directory (e.g. `../raw_stories`)
 
-Follow steps in https://github.com/abisee/cnn-dailymail to generate CoreNLP tokenized and sentence-splitted datasets (`cnn_stories_tokenized` and `dm_stories_tokenized`), and merge them into one directory `merged_stories_tokenized`.
+####  Step 2. Download Stanford CoreNLP
+We will need Stanford CoreNLP to tokenize the data. Download it [here](https://stanfordnlp.github.io/CoreNLP/) and unzip it. Then add the following command to your bash_profile:
+```
+export CLASSPATH=/path/to/stanford-corenlp-full-2017-06-09/stanford-corenlp-3.8.0.jar
+```
+replacing `/path/to/` with the path to where you saved the `stanford-corenlp-full-2017-06-09` directory. 
 
-#### Step 1
+####  Step 2. Sentence Splitting and Tokenization
+
+```
+python preprocess.py -mode tokenize -raw_path RAW_PATH -save_path TOKENIZED_PATH
+```
+
+* `RAW_PATH` is the directory containing story files (`../raw_stories`), `JSON_PATH` is the target directory to save the generated json files (`../merged_stories_tokenized`)
+
+
+####  Step 3. Format to Simpler Json Files
  
 ```
 python preprocess.py -mode format_to_lines -raw_path RAW_PATH -save_path JSON_PATH -map_path MAP_PATH -lower 
 ```
 
-`RAW_PATH` is the directory containing tokenized files (`../merged_stories_tokenized`), `JSON_PATH` is the target directory to save the generated json files (`../json_data`), `MAP_PATH` is the  directory containing the urls files (`../urls`)
+* `RAW_PATH` is the directory containing tokenized files (`../merged_stories_tokenized`), `JSON_PATH` is the target directory to save the generated json files (`../json_data/cnndm`), `MAP_PATH` is the  directory containing the urls files (`../urls`)
 
-#### Step 2
-
+####  Step 4. Format to PyTorch Files
 ```
 python preprocess.py -mode format_to_bert -raw_path JSON_PATH -save_path BERT_DATA_PATH -oracle_mode greedy -n_cpus 4 -log_file ../logs/preprocess.log
 ```
 
 * `JSON_PATH` is the directory containing json files (`../json_data`), `BERT_DATA_PATH` is the target directory to save the generated binary files (`../bert_data`)
 
-* `-oracle_mod`e can be `greedy` or `combination`, where `combination` is more accurate but takes much longer time to process 
+* `-oracle_mode` can be `greedy` or `combination`, where `combination` is more accurate but takes much longer time to process 
 
 ## Model Training
 
