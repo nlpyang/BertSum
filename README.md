@@ -37,7 +37,7 @@ export CLASSPATH=/path/to/stanford-corenlp-full-2017-06-09/stanford-corenlp-3.8.
 ```
 replacing `/path/to/` with the path to where you saved the `stanford-corenlp-full-2017-06-09` directory. 
 
-####  Step 2. Sentence Splitting and Tokenization
+####  Step 3. Sentence Splitting and Tokenization
 
 ```
 python preprocess.py -mode tokenize -raw_path RAW_PATH -save_path TOKENIZED_PATH
@@ -46,7 +46,7 @@ python preprocess.py -mode tokenize -raw_path RAW_PATH -save_path TOKENIZED_PATH
 * `RAW_PATH` is the directory containing story files (`../raw_stories`), `JSON_PATH` is the target directory to save the generated json files (`../merged_stories_tokenized`)
 
 
-####  Step 3. Format to Simpler Json Files
+####  Step 4. Format to Simpler Json Files
  
 ```
 python preprocess.py -mode format_to_lines -raw_path RAW_PATH -save_path JSON_PATH -map_path MAP_PATH -lower 
@@ -54,7 +54,7 @@ python preprocess.py -mode format_to_lines -raw_path RAW_PATH -save_path JSON_PA
 
 * `RAW_PATH` is the directory containing tokenized files (`../merged_stories_tokenized`), `JSON_PATH` is the target directory to save the generated json files (`../json_data/cnndm`), `MAP_PATH` is the  directory containing the urls files (`../urls`)
 
-####  Step 4. Format to PyTorch Files
+####  Step 5. Format to PyTorch Files
 ```
 python preprocess.py -mode format_to_bert -raw_path JSON_PATH -save_path BERT_DATA_PATH -oracle_mode greedy -n_cpus 4 -log_file ../logs/preprocess.log
 ```
