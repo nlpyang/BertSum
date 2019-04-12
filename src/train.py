@@ -346,5 +346,8 @@ if __name__ == '__main__':
         baseline(args, cal_oracle=True)
     elif (args.mode == 'test'):
         cp = args.test_from
-        step = int(cp.split('.')[-2].split('_')[-1])
+        try:
+            step = int(cp.split('.')[-2].split('_')[-1])
+        except:
+            step = 0
         test(args, device_id, cp, step)
