@@ -213,7 +213,7 @@ def test(args, device_id, pt, step):
                                   args.batch_size, device,
                                   shuffle=False, is_test=True)
     trainer = build_trainer(args, device_id, model, None)
-    trainer.test(test_iter,step)
+    trainer.test(test_iter,step, n_pred_sents = args.n_pred_sents)
 
 
 def baseline(args, cal_lead=False, cal_oracle=False):
@@ -225,9 +225,9 @@ def baseline(args, cal_lead=False, cal_oracle=False):
     trainer = build_trainer(args, device_id, None, None)
     #
     if (cal_lead):
-        trainer.test(test_iter, 0, cal_lead=True)
+        trainer.test(test_iter, 0, cal_lead=True, n_pred_sents = args.n_pred_sents)
     elif (cal_oracle):
-        trainer.test(test_iter, 0, cal_oracle=True)
+        trainer.test(test_iter, 0, cal_oracle=True, n_pred_sents = args.n_pred_sents)
 
 
 def train(args, device_id):
