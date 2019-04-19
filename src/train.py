@@ -320,6 +320,7 @@ if __name__ == '__main__':
     parser.add_argument('-dataset', default='')
     parser.add_argument('-seed', default=666, type=int)
 
+    parser.add_argument("-n_pred_sents", type=int,default=3)
     parser.add_argument("-test_all", type=str2bool, nargs='?',const=True,default=False)
     parser.add_argument("-test_from", default='')
     parser.add_argument("-train_from", default='')
