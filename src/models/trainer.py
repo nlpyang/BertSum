@@ -271,6 +271,8 @@ class Trainer(object):
                             # selected_ids = np.sort(selected_ids,1)
                             for i, idx in enumerate(selected_ids):
                                 _pred = []
+                                _pred_len = 0
+                                tgt_len = len(batch.tgt_str[i].split())
                                 if(len(batch.src_str[i])==0):
                                     continue
                                 real_selected_ids = []
@@ -282,18 +284,24 @@ class Trainer(object):
                                     if(self.args.block_trigram):
                                         if(not _block_tri(candidate,_pred)):
                                             _pred.append(candidate)
+                                            _pred_len += len(candidate.split())
                                             real_selected_ids.append(int(j))
+                                            if(_pred_len>tgt_len+10):
+                                                break
 
                                     else:
                                         _pred.append(candidate)
+                                        _pred_len += len(candidate.split())
                                         real_selected_ids.append(int(j))
+                                        if (_pred_len > tgt_len + 10):
+                                            break
 
                                     if ((not cal_oracle) and (not self.args.recall_eval) and len(_pred) == n_pred_sents):
                                         break
 
                                 _pred = '<q>'.join(_pred)
                                 if(self.args.recall_eval):
-                                    _pred = ' '.join(_pred.split()[:len(batch.tgt_str[i].split())])
+                                    _pred = ' '.join(_pred.split()[:tgt_len])
 
 
                                 if (len(sent_scores) == 0):
