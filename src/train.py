@@ -287,6 +287,7 @@ if __name__ == '__main__':
     parser.add_argument("-bert_config_path", default='../bert_config_uncased_base.json')
 
     parser.add_argument("-batch_size", default=1000, type=int)
+    parser.add_argument("-max_pos", default=512, type=int)
 
     parser.add_argument("-use_interval", type=str2bool, nargs='?',const=True,default=True)
     parser.add_argument("-hidden_size", default=128, type=int)

@@ -1,3 +1,4 @@
+import bisect
 import gc
 import glob
 import random
@@ -184,6 +185,14 @@ class DataIterator(object):
         clss = ex['clss']
         src_txt = ex['src_txt']
         tgt_txt = ex['tgt_txt']
+
+        end_id = [src[-1]]
+        src = src[:-1][:self.args.max_pos-1]+end_id
+        segs = segs[:self.args.max_pos]
+        max_sent_id = bisect.bisect_left(clss, self.args.max_pos)
+        labels = labels[:max_sent_id]
+        clss = clss[:max_sent_id]
+        src_txt = src_txt[:max_sent_id]
 
         if(is_test):
             return src,labels,segs, clss, src_txt, tgt_txt

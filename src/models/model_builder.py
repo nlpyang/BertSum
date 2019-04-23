@@ -61,6 +61,13 @@ class Summarizer(nn.Module):
         self.args = args
         self.device = device
         self.bert = Bert(args.temp_dir, load_pretrained_bert, bert_config)
+
+        if(args.max_pos>512):
+            my_pos_embeddings = nn.Embedding(args.max_pos, self.bert.model.config.hidden_size)
+            my_pos_embeddings.weight.data[:512] = self.bert.model.embeddings.position_embeddings.weight.data
+            my_pos_embeddings.weight.data[512:] = self.bert.model.embeddings.position_embeddings.weight.data[-1][None,:].repeat(args.max_pos-512,1)
+            self.bert.model.embeddings.position_embeddings = my_pos_embeddings
+
         if (args.encoder == 'classifier'):
             self.encoder = Classifier(self.bert.model.config.hidden_size)
         elif(args.encoder=='transformer'):
