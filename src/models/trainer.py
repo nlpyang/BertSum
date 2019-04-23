@@ -1,3 +1,4 @@
+import json
 import os
 
 import numpy as np
@@ -231,68 +232,89 @@ class Trainer(object):
             self.model.eval()
         stats = Statistics()
 
+        analyze_path = '%s_step%d.analyze.json' % (self.args.result_path, step)
         can_path = '%s_step%d.candidate'%(self.args.result_path,step)
         gold_path = '%s_step%d.gold' % (self.args.result_path, step)
-        with open(can_path, 'w') as save_pred:
-            with open(gold_path, 'w') as save_gold:
-                with torch.no_grad():
-                    for batch in test_iter:
-                        src = batch.src
-                        labels = batch.labels
-                        segs = batch.segs
-                        clss = batch.clss
-                        mask = batch.mask
-                        mask_cls = batch.mask_cls
+        with open(analyze_path, 'w') as save_analyze:
 
+            with open(can_path, 'w') as save_pred:
+                with open(gold_path, 'w') as save_gold:
+                    with torch.no_grad():
+                        for batch in test_iter:
+                            src = batch.src
+                            labels = batch.labels
+                            segs = batch.segs
+                            clss = batch.clss
+                            mask = batch.mask
+                            mask_cls = batch.mask_cls
 
-                        gold = []
-                        pred = []
+                            analyze = []
+                            gold = []
+                            pred = []
+                            sent_scores = []
+                            if (cal_lead):
+                                selected_ids = [list(range(batch.clss.size(1)))] * batch.batch_size
+                            elif (cal_oracle):
+                                selected_ids = [[j for j in range(batch.clss.size(1)) if labels[i][j] == 1] for i in
+                                                range(batch.batch_size)]
+                            else:
+                                sent_scores, mask = self.model(src, segs, clss, mask, mask_cls)
 
-                        if (cal_lead):
-                            selected_ids = [list(range(batch.clss.size(1)))] * batch.batch_size
-                        elif (cal_oracle):
-                            selected_ids = [[j for j in range(batch.clss.size(1)) if labels[i][j] == 1] for i in
-                                            range(batch.batch_size)]
-                        else:
-                            sent_scores, mask = self.model(src, segs, clss, mask, mask_cls)
+                                loss = self.loss(sent_scores, labels.float())
+                                loss = (loss * mask.float()).sum()
+                                batch_stats = Statistics(float(loss.cpu().data.numpy()), len(labels))
+                                stats.update(batch_stats)
 
-                            loss = self.loss(sent_scores, labels.float())
-                            loss = (loss * mask.float()).sum()
-                            batch_stats = Statistics(float(loss.cpu().data.numpy()), len(labels))
-                            stats.update(batch_stats)
-
-                            sent_scores = sent_scores + mask.float()
-                            sent_scores = sent_scores.cpu().data.numpy()
-                            selected_ids = np.argsort(-sent_scores, 1)
-                        # selected_ids = np.sort(selected_ids,1)
-                        for i, idx in enumerate(selected_ids):
-                            _pred = []
-                            if(len(batch.src_str[i])==0):
-                                continue
-                            for j in selected_ids[i][:len(batch.src_str[i])]:
-                                if(j>=len( batch.src_str[i])):
+                                sent_scores = sent_scores + mask.float()
+                                sent_scores = sent_scores.cpu().data.numpy()
+                                selected_ids = np.argsort(-sent_scores, 1)
+                            # selected_ids = np.sort(selected_ids,1)
+                            for i, idx in enumerate(selected_ids):
+                                _pred = []
+                                if(len(batch.src_str[i])==0):
                                     continue
-                                candidate = batch.src_str[i][j].strip()
-                                if(self.args.block_trigram):
-                                    if(not _block_tri(candidate,_pred)):
+                                real_selected_ids = []
+
+                                for j in selected_ids[i][:len(batch.src_str[i])]:
+                                    if(j>=len( batch.src_str[i])):
+                                        continue
+                                    candidate = batch.src_str[i][j].strip()
+                                    if(self.args.block_trigram):
+                                        if(not _block_tri(candidate,_pred)):
+                                            _pred.append(candidate)
+                                            real_selected_ids.append(int(j))
+
+                                    else:
                                         _pred.append(candidate)
+                                        real_selected_ids.append(int(j))
+
+                                    if ((not cal_oracle) and (not self.args.recall_eval) and len(_pred) == n_pred_sents):
+                                        break
+
+                                _pred = '<q>'.join(_pred)
+                                if(self.args.recall_eval):
+                                    _pred = ' '.join(_pred.split()[:len(batch.tgt_str[i].split())])
+
+
+                                if (len(sent_scores) == 0):
+                                    analyze.append(
+                                        {'src': batch.src_str[i],
+                                         'selected_ids': real_selected_ids})
                                 else:
-                                    _pred.append(candidate)
+                                    analyze.append(
+                                        {'src': batch.src_str[i], 'sent_scores': [float(ss) for ss in sent_scores[i]],
+                                         'selected_ids': real_selected_ids})
 
-                                if ((not cal_oracle) and (not self.args.recall_eval) and len(_pred) == n_pred_sents):
-                                    break
+                                pred.append(_pred)
+                                gold.append(batch.tgt_str[i])
 
-                            _pred = '<q>'.join(_pred)
-                            if(self.args.recall_eval):
-                                _pred = ' '.join(_pred.split()[:len(batch.tgt_str[i].split())])
+                            for i in range(len(gold)):
+                                save_analyze.write(json.dumps(analyze[i]).strip() + '\n')
 
-                            pred.append(_pred)
-                            gold.append(batch.tgt_str[i])
-
-                        for i in range(len(gold)):
-                            save_gold.write(gold[i].strip()+'\n')
-                        for i in range(len(pred)):
-                            save_pred.write(pred[i].strip()+'\n')
+                            for i in range(len(gold)):
+                                save_gold.write(gold[i].strip()+'\n')
+                            for i in range(len(pred)):
+                                save_pred.write(pred[i].strip()+'\n')
         if(step!=-1 and self.args.report_rouge):
             rouges = test_rouge(self.args.temp_dir, can_path, gold_path)
             logger.info('Rouges at step %d \n%s' % (step, rouge_results_to_str(rouges)))
