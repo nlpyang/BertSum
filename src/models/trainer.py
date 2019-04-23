@@ -285,15 +285,17 @@ class Trainer(object):
                                         if(not _block_tri(candidate,_pred)):
                                             _pred.append(candidate)
                                             _pred_len += len(candidate.split())
-                                            real_selected_ids.append(int(j))
                                             if(_pred_len>tgt_len+10):
+                                                real_selected_ids.append(int(j))
+
                                                 break
 
                                     else:
                                         _pred.append(candidate)
                                         _pred_len += len(candidate.split())
-                                        real_selected_ids.append(int(j))
                                         if (_pred_len > tgt_len + 10):
+                                            real_selected_ids.append(int(j))
+
                                             break
 
                                     if ((not cal_oracle) and (not self.args.recall_eval) and len(_pred) == n_pred_sents):
