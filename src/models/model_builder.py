@@ -41,10 +41,14 @@ def build_optim(args, model, checkpoint):
 
 
 class Bert(nn.Module):
-    def __init__(self, temp_dir, load_pretrained_bert, bert_config):
+    def __init__(self, temp_dir, load_pretrained_bert, bert_config, large=False):
         super(Bert, self).__init__()
         if(load_pretrained_bert):
-            self.model = BertModel.from_pretrained('bert-base-uncased', cache_dir=temp_dir)
+            if (large):
+                self.model = BertModel.from_pretrained('bert-large-uncased', cache_dir=temp_dir)
+            else:
+                self.model = BertModel.from_pretrained('bert-base-uncased', cache_dir=temp_dir)
+
         else:
             self.model = BertModel(bert_config)
 
@@ -60,7 +64,7 @@ class Summarizer(nn.Module):
         super(Summarizer, self).__init__()
         self.args = args
         self.device = device
-        self.bert = Bert(args.temp_dir, load_pretrained_bert, bert_config)
+        self.bert = Bert(args.temp_dir, load_pretrained_bert, bert_config, large=args.large)
 
         if(args.max_pos>512):
             my_pos_embeddings = nn.Embedding(args.max_pos, self.bert.model.config.hidden_size)
