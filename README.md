@@ -5,7 +5,7 @@
 
 Results on CNN/Dailymail (25/3/2019):
 
-|  Models| ROUGE-1 | ROUGE-2 |ROUGE-3
+|  Models| ROUGE-1 | ROUGE-2 |ROUGE-L
 | :---         |     :---      |         :--- |          :--- |
 | Transformer Baseline   | 40.9     | 18.02    |37.17    |
 | BERTSUM+Classifier     | 43.23       | 20.22    |39.60      |
@@ -28,7 +28,7 @@ unzip the zipfile and put all `.pt` files into `bert_data`
 ### Option 2: process the data yourself
 
 #### Step 1 Download Stories
-Download and unzip the `stories` directories from [here](http://cs.nyu.edu/~kcho/DMQA/) for both CNN and Daily Mail. Put all  `.stroy` files in one directory (e.g. `../raw_stories`)
+Download and unzip the `stories` directories from [here](http://cs.nyu.edu/~kcho/DMQA/) for both CNN and Daily Mail. Put all  `.story` files in one directory (e.g. `../raw_stories`)
 
 ####  Step 2. Download Stanford CoreNLP
 We will need Stanford CoreNLP to tokenize the data. Download it [here](https://stanfordnlp.github.io/CoreNLP/) and unzip it. Then add the following command to your bash_profile:
