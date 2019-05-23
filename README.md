@@ -21,7 +21,7 @@ Some codes are borrowed from ONMT(https://github.com/OpenNMT/OpenNMT-py)
 ## Data Preparation For CNN/Dailymail
 ### Option 1: download the processed data
 
-download https://drive.google.com/open?id=1-NJKRoNzk2ugjjB2mfnmpR15KYB_Fr0s
+download https://drive.google.com/open?id=1x0d61LP9UAN389YN00z0Pv-7jQgirVg6
 
 unzip the zipfile and put all `.pt` files into `bert_data`
 
