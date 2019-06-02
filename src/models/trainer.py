@@ -384,7 +384,7 @@ class Trainer(object):
         """ 
         Runs tokenization and end to end inference on a single test example. Designed for API deployment.
         Args:
-            example(str): document that we want to summarize.
+            example(dataloader.Batch): batch example that we want to summarize.
             top_n_sentences(int): number of top sentences to return as the summary.
         Returns:
             results(dict): dictionary containing source articles and predicted summaries
