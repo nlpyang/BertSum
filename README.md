@@ -2,6 +2,9 @@
 
 **This code is for paper `Fine-tune BERT for Extractive Summarization`**(https://arxiv.org/pdf/1903.10318.pdf)
 
+**Please email the author for a pre-trained model**
+
+
 
 Results on CNN/Dailymail (25/3/2019):
 
