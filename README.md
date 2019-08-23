@@ -2,7 +2,7 @@
 
 **This code is for paper `Fine-tune BERT for Extractive Summarization`**(https://arxiv.org/pdf/1903.10318.pdf)
 
-**Please see our [full paper](https://arxiv.org/abs/1908.08345) with trained models**
+**!New: Please see our [full paper](https://arxiv.org/abs/1908.08345) with trained models**
 
 
 
