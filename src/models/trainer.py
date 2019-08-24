@@ -300,7 +300,169 @@ class Trainer(object):
 
         return stats
 
-
+    def test_api(self, test_iter, step, top_n_sentences=3, cal_lead=False, cal_oracle=False):
+        """ Test model and return results as a dictionary. Designed for batch input API deployment.
+            test_iter: test data iterator
+        Returns:
+            results: dictionary containing source articles and predicted summaries
+        """
+        # Set model in validating mode.
+        def _get_ngrams(n, text):
+            ngram_set = set()
+            text_length = len(text)
+            max_index_ngram_start = text_length - n
+            for i in range(max_index_ngram_start + 1):
+                ngram_set.add(tuple(text[i:i + n]))
+            return ngram_set
+    
+        def _block_tri(c, p):
+            tri_c = _get_ngrams(3, c.split())
+            for s in p:
+                tri_s = _get_ngrams(3, s.split())
+                if len(tri_c.intersection(tri_s))>0:
+                    return True
+            return False
+    
+        if (not cal_lead and not cal_oracle):
+            # Evaluate without performing backpropagation and dropout
+            self.model.eval()
+        source_article = []
+        pred = []
+        with torch.no_grad():
+            for batch in test_iter:
+                src = batch.src
+                labels = batch.labels
+                segs = batch.segs
+                clss = batch.clss
+                mask = batch.mask
+                mask_cls = batch.mask_cls
+                src_str = batch.src_str
+    
+                source_article += [' '.join(article) for article in src_str]
+    
+                if (cal_lead):
+                    selected_ids = [list(range(batch.clss.size(1)))] * batch.batch_size
+                elif (cal_oracle):
+                    selected_ids = [[j for j in range(batch.clss.size(1)) if labels[i][j] == 1] for i in
+                                    range(batch.batch_size)]
+                else:
+                    sent_scores, mask = self.model(src, segs, clss, mask, mask_cls)
+    
+                    sent_scores = sent_scores + mask.float()
+                    sent_scores = sent_scores.cpu().data.numpy()
+                    # Sort sentence ids in descending order based on sentence scores (representing summary importance)
+                    selected_ids = np.argsort(-sent_scores, 1)
+                # selected_ids = np.sort(selected_ids,1)
+                for i, idx in enumerate(selected_ids):
+                    _pred = []
+                    if(len(batch.src_str[i])==0):
+                        continue
+                    # Loop through each sentence
+                    # len(batch.src_str[i]) refers to the number of sentences in the jth test example
+                    for j in selected_ids[i][:len(batch.src_str[i])]:
+                        if(j>=len( batch.src_str[i])):
+                            continue
+                        candidate = batch.src_str[i][j].strip()
+                        if(self.args.block_trigram):
+                            if(not _block_tri(candidate,_pred)):
+                                _pred.append(candidate)
+                        else:
+                            _pred.append(candidate)
+                        
+                        # len(_pred) == 3 means that we limit sentences to top top_n_sentences
+                        if ((not cal_oracle) and (not self.args.recall_eval) and len(_pred) == top_n_sentences):
+                            break
+    
+                    _pred = '<q>'.join(_pred)
+    
+                    pred.append(_pred)
+    
+        results = {'source_article': source_article, 'predicted_summary': pred}
+        return results
+    
+    def example_api(self, example, step, top_n_sentences=3, device='cpu', cal_lead=False, cal_oracle=False):
+        """ 
+        Runs tokenization and end to end inference on a single test example. Designed for API deployment.
+        Args:
+            example(dataloader.Batch): batch example that we want to summarize.
+            top_n_sentences(int): number of top sentences to return as the summary.
+        Returns:
+            results(dict): dictionary containing source articles and predicted summaries
+        
+        """
+        # Set model in validating mode.
+        def _get_ngrams(n, text):
+            ngram_set = set()
+            text_length = len(text)
+            max_index_ngram_start = text_length - n
+            for i in range(max_index_ngram_start + 1):
+                ngram_set.add(tuple(text[i:i + n]))
+            return ngram_set
+    
+        def _block_tri(c, p):
+            tri_c = _get_ngrams(3, c.split())
+            for s in p:
+                tri_s = _get_ngrams(3, s.split())
+                if len(tri_c.intersection(tri_s))>0:
+                    return True
+            return False
+    
+        if (not cal_lead and not cal_oracle):
+            # Evaluate without performing backpropagation and dropout
+            self.model.eval()
+        # Set model device (cuda or cpu)
+        self.model.to(device=device) 
+        source_article = []
+        pred = []
+        src = example.src
+        labels = example.labels
+        segs = example.segs
+        clss = example.clss
+        mask = example.mask
+        mask_cls = example.mask_cls
+        src_str = example.src_str
+    
+        source_article += [' '.join(article) for article in src_str]
+    
+        if (cal_lead):
+            selected_ids = [list(range(example.clss.size(1)))] * example.batch_size
+        elif (cal_oracle):
+            selected_ids = [[j for j in range(example.clss.size(1)) if labels[i][j] == 1] for i in
+                            range(example.batch_size)]
+        else:
+            sent_scores, mask = self.model(src, segs, clss, mask, mask_cls)
+    
+            sent_scores = sent_scores + mask.float()
+            sent_scores = sent_scores.cpu().data.numpy()
+            # Sort sentence ids in descending order based on sentence scores (representing summary importance)
+            selected_ids = np.argsort(-sent_scores, 1)
+        # selected_ids = np.sort(selected_ids,1)
+        for i, idx in enumerate(selected_ids):
+            _pred = []
+            if(len(example.src_str[i])==0):
+                continue
+            # Loop through each sentence
+            # len(example.src_str[i]) refers to the number of sentences in the jth test example
+            for j in selected_ids[i][:len(example.src_str[i])]:
+                if(j>=len( example.src_str[i])):
+                    continue
+                candidate = example.src_str[i][j].strip()
+                if(self.args.block_trigram):
+                    if(not _block_tri(candidate,_pred)):
+                        _pred.append(candidate)
+                else:
+                    _pred.append(candidate)
+    
+                # len(_pred) == 3 means that we limit sentences to top top_n_sentences
+                if ((not cal_oracle) and (not self.args.recall_eval) and len(_pred) == top_n_sentences):
+                    break
+    
+            _pred = '<q>'.join(_pred)
+    
+            pred.append(_pred)
+    
+        results = {'source_article': source_article, 'predicted_summary': pred}
+        return results
 
     def _gradient_accumulation(self, true_batchs, normalization, total_stats,
                                report_stats):
