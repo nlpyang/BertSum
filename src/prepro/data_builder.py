@@ -22,7 +22,7 @@ def load_json(p, lower):
     source = []
     tgt = []
     flag = False
-    for sent in json.load(open(p))['sentences']:
+    for sent in json.load(open(p, 'rt', encoding='UTF8'))['sentences']:
         tokens = [t['word'] for t in sent['tokens']]
         if (lower):
             tokens = [t.lower() for t in tokens]
