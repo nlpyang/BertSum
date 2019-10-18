@@ -46,7 +46,7 @@ replacing `/path/to/` with the path to where you saved the `stanford-corenlp-ful
 python preprocess.py -mode tokenize -raw_path RAW_PATH -save_path TOKENIZED_PATH
 ```
 
-* `RAW_PATH` is the directory containing story files (`../raw_stories`), `JSON_PATH` is the target directory to save the generated json files (`../merged_stories_tokenized`)
+* `RAW_PATH` is the directory containing story files (`../raw_stories`), `TOKENIZED_PATH` is the target directory to save the generated json files (`../merged_stories_tokenized`)
 
 
 ####  Step 4. Format to Simpler Json Files
