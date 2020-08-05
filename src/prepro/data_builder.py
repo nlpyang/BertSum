@@ -31,7 +31,6 @@ def load_json(p, lower):
             continue
         if (flag):
             tgt.append(tokens)
-            flag = False
         else:
             source.append(tokens)
 
