@@ -19,6 +19,10 @@ Results on CNN/Dailymail (25/3/2019):
 
 **Package Requirements**: pytorch pytorch_pretrained_bert tensorboardX multiprocess pyrouge
 
+##### To install the required packages:
+```
+pip install -r requirements.txt
+```
 Some codes are borrowed from ONMT(https://github.com/OpenNMT/OpenNMT-py)
 
 ## Data Preparation For CNN/Dailymail
