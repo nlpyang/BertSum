@@ -105,7 +105,7 @@ python train.py -mode validate -bert_data_path ../bert_data/cnndm -model_path MO
 
 ## Known Issues
 
-When running the code with higher versions of pytorch, you may encounter the following error.
+When running the code with higher versions of PyTorch, you may encounter the following error.
 
 ```
 Subtraction, the - operator, with a bool tensor is not supported
