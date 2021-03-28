@@ -19,6 +19,12 @@ Results on CNN/Dailymail (25/3/2019):
 
 **Package Requirements**: pytorch pytorch_pretrained_bert tensorboardX multiprocess pyrouge
 
+We have included a requirements.txt file to help you get started. 
+
+```
+pip install -r requirements.txt
+```
+
 Some codes are borrowed from ONMT(https://github.com/OpenNMT/OpenNMT-py)
 
 ## Data Preparation For CNN/Dailymail
@@ -97,4 +103,21 @@ python train.py -mode validate -bert_data_path ../bert_data/cnndm -model_path MO
 * `MODEL_PATH` is the directory of saved checkpoints
 * `RESULT_PATH` is where you want to put decoded summaries (default `../results/cnndm`)
 
+## Known Issues
+
+When running the code with higher versions of PyTorch, you may encounter the following error.
+
+```
+Subtraction, the - operator, with a bool tensor is not supported
+```
+
+For this reason we have specified version 1.1.0 in the requirements.txt file.
+
+When running one of the training commands, the program may crash with the following message.
+
+```
+invalid device ordinal
+```
+
+This may be because you are running on a system that only has access to a single GPU. If this is the case, running the commands with the following flags ``-visible_gpus 0  -gpu_ranks 0 -world_size 1`` should work.
 
