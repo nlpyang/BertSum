@@ -113,4 +113,11 @@ Subtraction, the - operator, with a bool tensor is not supported
 
 For this reason we have specified version 1.1.0 in the requirements.txt file.
 
+When running one of the training commands, the program may crash with the following message.
+
+```
+invalid device ordinal
+```
+
+This may be because you are running on a system that only has access to a single GPU. If this is the case, running the commands with the following flags ``-visible_gpus 0  -gpu_ranks 0 -world_size 1`` should work.
 
